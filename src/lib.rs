@@ -71,7 +71,7 @@ fn test_satisfy() {
 fn test_then() {
     let x = satisfy(|b| b == b'x');
     let y = satisfy(|b| b == b'y');
-    let mut xy = Then { p1: x, p2: y };
+    let mut xy = x.then(y);
     assert_eq!(xy.parse(b""), Err(()));
     assert_eq!(xy.parse(b"x"), Err(()));
     assert_eq!(xy.parse(b"y"), Err(()));
