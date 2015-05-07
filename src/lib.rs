@@ -28,6 +28,11 @@ impl<F> Parser for Satisfy<F>
     }
 }
 
+pub struct Then<P1: Parser, P2: Parser> {
+    p1: P1,
+    p2: P2
+}
+
 #[test]
 fn test_satisfy() {
     let mut x = satisfy(|b| b == b'x');
