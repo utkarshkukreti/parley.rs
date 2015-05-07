@@ -137,11 +137,7 @@ fn test_or() {
 
 #[test]
 fn test_map() {
-    let digit = satisfy(|b| b'0' <= b && b <= b'9');
-    let mut digit = Map {
-        f: |b| b - b'0',
-        p: digit
-    };
+    let mut digit = satisfy(|b| b'0' <= b && b <= b'9').map(|b| b - b'0');
 
     assert_eq!(digit.parse(b""), Err(()));
     assert_eq!(digit.parse(b"0"), Ok((0, 1)));
