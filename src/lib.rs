@@ -18,6 +18,15 @@ pub trait Parser: Sized {
             p2: other
         }
     }
+
+    fn map<O, F>(self, f: F) -> Map<O, F, Self>
+        where F: FnMut(Self::Output) -> O
+    {
+        Map {
+            p: self,
+            f: f
+        }
+    }
 }
 
 pub struct Satisfy<F: FnMut(u8) -> bool> {
