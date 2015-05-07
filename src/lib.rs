@@ -8,6 +8,12 @@ pub struct Satisfy<F: FnMut(u8) -> bool> {
     f: F
 }
 
+pub fn satisfy<F: FnMut(u8) -> bool>(f: F) -> Satisfy<F> {
+    Satisfy {
+        f: f
+    }
+}
+
 impl<F> Parser for Satisfy<F>
     where F: FnMut(u8) -> bool
 {
@@ -24,7 +30,7 @@ impl<F> Parser for Satisfy<F>
 
 #[test]
 fn test_satisfy() {
-    let mut x = Satisfy { f: |b| b == b'x' };
+    let mut x = satisfy(|b| b == b'x');
     assert_eq!(x.parse(b""), Err(()));
     assert_eq!(x.parse(b"x"), Ok((b'x', 1)));
     assert_eq!(x.parse(b"y"), Err(()));
