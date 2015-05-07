@@ -78,6 +78,11 @@ impl<O, P1, P2> Parser for Or<P1, P2>
     }
 }
 
+pub struct Map<O, F: FnMut(P::Output) -> O, P: Parser> {
+    p: P,
+    f: F
+}
+
 #[test]
 fn test_satisfy() {
     let mut x = satisfy(|b| b == b'x');
