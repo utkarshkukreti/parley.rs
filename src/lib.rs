@@ -63,6 +63,22 @@ pub struct Or<P1: Parser, P2: Parser> {
     p2: P2
 }
 
+impl<O, P1, P2> Parser for Or<P1, P2>
+    where P1: Parser<Output = O>, P2: Parser<Output = O>
+{
+    type Output = O;
+    fn parse(&mut self, input: &[u8])
+             -> Result<(O, usize), ()> {
+        match self.p1.parse(input) {
+            Ok((r1, c1)) => Ok((r1, c1)),
+            Err(()) => match self.p2.parse(input) {
+                Ok((r2, c2)) => Ok((r2, c2)),
+                Err(()) => Err(())
+            }
+        }
+    }
+}
+
 #[test]
 fn test_satisfy() {
     let mut x = satisfy(|b| b == b'x');
@@ -82,4 +98,17 @@ fn test_then() {
     assert_eq!(xy.parse(b"y"), Err(()));
     assert_eq!(xy.parse(b"xy"), Ok(((b'x', b'y'), 2)));
     assert_eq!(xy.parse(b"xyz"), Ok(((b'x', b'y'), 2)));
+}
+
+#[test]
+fn test_or() {
+    let x = satisfy(|b| b == b'x');
+    let y = satisfy(|b| b == b'y');
+    let mut xy = Or { p1: x, p2: y };
+    assert_eq!(xy.parse(b""), Err(()));
+    assert_eq!(xy.parse(b"x"), Ok((b'x', 1)));
+    assert_eq!(xy.parse(b"y"), Ok((b'y', 1)));
+    assert_eq!(xy.parse(b"xy"), Ok((b'x', 1)));
+    assert_eq!(xy.parse(b"yx"), Ok((b'y', 1)));
+    assert_eq!(xy.parse(b"z"), Err(()));
 }
