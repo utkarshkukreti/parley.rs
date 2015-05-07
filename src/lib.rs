@@ -1,7 +1,14 @@
-pub trait Parser {
+pub trait Parser: Sized {
     type Output;
 
     fn parse(&mut self, input: &[u8]) -> Result<(Self::Output, usize), ()>;
+
+    fn then<P2: Parser>(self, other: P2) -> Then<Self, P2> {
+        Then {
+            p1: self,
+            p2: other
+        }
+    }
 }
 
 pub struct Satisfy<F: FnMut(u8) -> bool> {
