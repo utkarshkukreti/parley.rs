@@ -9,6 +9,15 @@ pub trait Parser: Sized {
             p2: other
         }
     }
+
+    fn or<P2>(self, other: P2) -> Or<Self, P2>
+        where P2: Parser<Output = Self::Output>
+    {
+        Or {
+            p1: self,
+            p2: other
+        }
+    }
 }
 
 pub struct Satisfy<F: FnMut(u8) -> bool> {
