@@ -83,6 +83,15 @@ pub struct Map<O, F: FnMut(P::Output) -> O, P: Parser> {
     f: F
 }
 
+impl<O, F, P> Parser for Map<O, F, P>
+    where F: FnMut(P::Output) -> O, P: Parser
+{
+    type Output = O;
+    fn parse(&mut self, input: &[u8]) -> Result<(O, usize), ()> {
+        self.p.parse(input).map(|(r, c)| ((self.f)(r), c))
+    }
+}
+
 #[test]
 fn test_satisfy() {
     let mut x = satisfy(|b| b == b'x');
@@ -115,4 +124,18 @@ fn test_or() {
     assert_eq!(xy.parse(b"xy"), Ok((b'x', 1)));
     assert_eq!(xy.parse(b"yx"), Ok((b'y', 1)));
     assert_eq!(xy.parse(b"z"), Err(()));
+}
+
+#[test]
+fn test_map() {
+    let digit = satisfy(|b| b'0' <= b && b <= b'9');
+    let mut digit = Map {
+        f: |b| b - b'0',
+        p: digit
+    };
+
+    assert_eq!(digit.parse(b""), Err(()));
+    assert_eq!(digit.parse(b"0"), Ok((0, 1)));
+    assert_eq!(digit.parse(b"9"), Ok((9, 1)));
+    assert_eq!(digit.parse(b"z"), Err(()));
 }
