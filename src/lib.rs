@@ -65,13 +65,7 @@ impl<O, P1, P2> Parser for Or<P1, P2>
     type Output = O;
     fn parse(&mut self, input: &[u8])
              -> Result<(O, usize), ()> {
-        match self.p1.parse(input) {
-            Ok((r1, c1)) => Ok((r1, c1)),
-            Err(()) => match self.p2.parse(input) {
-                Ok((r2, c2)) => Ok((r2, c2)),
-                Err(()) => Err(())
-            }
-        }
+        self.p1.parse(input).or_else(|_| self.p2.parse(input))
     }
 }
 
