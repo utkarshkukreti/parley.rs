@@ -46,15 +46,11 @@ impl<P1, P2> Parser for Then<P1, P2>
     type Output = (P1::Output, P2::Output);
     fn parse(&mut self, input: &[u8])
              -> Result<((P1::Output, P2::Output), usize), ()> {
-        match self.p1.parse(input) {
-            Ok((r1, c1)) => {
-                match self.p2.parse(&input[c1..]) {
-                    Ok((r2, c2)) => Ok(((r1, r2), c1 + c2)),
-                    Err(()) => Err(())
-                }
-            },
-            Err(()) => Err(())
-        }
+        self.p1.parse(input).and_then(|(r1, c1)| {
+            self.p2.parse(&input[c1..]).and_then(|(r2, c2)| {
+                Ok(((r1, r2), c1 + c2))
+            })
+        })
     }
 }
 
