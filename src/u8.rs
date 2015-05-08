@@ -24,6 +24,10 @@ impl<F> Parser for Satisfy<F>
     }
 }
 
+pub struct U8 {
+    u8: u8
+}
+
 #[test]
 fn test_satisfy() {
     let mut x = satisfy(|b| b == b'x');
