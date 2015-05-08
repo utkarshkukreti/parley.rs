@@ -55,9 +55,7 @@ fn test_satisfy() {
 
 #[test]
 fn test_u8() {
-    let mut x = U8 {
-        u8: b'x'
-    };
+    let mut x = u8(b'x');
     assert_eq!(x.parse(b""), Err(()));
     assert_eq!(x.parse(b"x"), Ok((b'x', 1)));
     assert_eq!(x.parse(b"y"), Err(()));
