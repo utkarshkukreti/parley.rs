@@ -28,9 +28,30 @@ pub struct U8 {
     u8: u8
 }
 
+impl Parser for U8 {
+    type Output = u8;
+    fn parse(&mut self, input: &[u8]) -> Result<(u8, usize), ()> {
+        if input.get(0) == Some(&self.u8) {
+            return Ok((self.u8, 1));
+        }
+        Err(())
+    }
+}
+
 #[test]
 fn test_satisfy() {
     let mut x = satisfy(|b| b == b'x');
+    assert_eq!(x.parse(b""), Err(()));
+    assert_eq!(x.parse(b"x"), Ok((b'x', 1)));
+    assert_eq!(x.parse(b"y"), Err(()));
+    assert_eq!(x.parse(b"xy"), Ok((b'x', 1)));
+}
+
+#[test]
+fn test_u8() {
+    let mut x = U8 {
+        u8: b'x'
+    };
     assert_eq!(x.parse(b""), Err(()));
     assert_eq!(x.parse(b"x"), Ok((b'x', 1)));
     assert_eq!(x.parse(b"y"), Err(()));
