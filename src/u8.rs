@@ -28,6 +28,12 @@ pub struct U8 {
     u8: u8
 }
 
+pub fn u8(u8: u8) -> U8 {
+    U8 {
+        u8: u8
+    }
+}
+
 impl Parser for U8 {
     type Output = u8;
     fn parse(&mut self, input: &[u8]) -> Result<(u8, usize), ()> {
