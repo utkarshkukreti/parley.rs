@@ -48,6 +48,10 @@ impl<O, F, P> Parser for Map<O, F, P>
     }
 }
 
+pub struct Many<P: Parser> {
+    pub p: P
+}
+
 #[test]
 fn test_then() {
     use u8::satisfy;
