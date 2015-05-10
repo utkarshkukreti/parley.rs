@@ -117,9 +117,7 @@ fn test_map() {
 fn test_many() {
     use u8::satisfy;
 
-    let mut digits = Many {
-        p: satisfy(|b| b'0' <= b && b <= b'9')
-    };
+    let mut digits = satisfy(|b| b'0' <= b && b <= b'9').many();
 
     assert_eq!(digits.parse(b""), Ok((vec![], 0)));
     assert_eq!(digits.parse(b"0"), Ok((vec![b'0'], 1)));
