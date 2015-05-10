@@ -52,6 +52,26 @@ pub struct Many<P: Parser> {
     pub p: P
 }
 
+impl<P>Parser for Many<P>
+    where P: Parser
+{
+    type Output = Vec<P::Output>;
+    fn parse(&mut self, input: &[u8]) -> Result<(Vec<P::Output>, usize), ()> {
+        let mut parsed = vec![];
+        let mut consumed = 0;
+        loop {
+            match self.p.parse(&input[consumed..]) {
+                Ok((r, c)) => {
+                    parsed.push(r);
+                    consumed += c;
+                },
+                Err(()) => break
+            }
+        }
+        Ok((parsed, consumed))
+    }
+}
+
 #[test]
 fn test_then() {
     use u8::satisfy;
@@ -91,4 +111,20 @@ fn test_map() {
     assert_eq!(digit.parse(b"0"), Ok((0, 1)));
     assert_eq!(digit.parse(b"9"), Ok((9, 1)));
     assert_eq!(digit.parse(b"z"), Err(()));
+}
+
+#[test]
+fn test_many() {
+    use u8::satisfy;
+
+    let mut digits = Many {
+        p: satisfy(|b| b'0' <= b && b <= b'9')
+    };
+
+    assert_eq!(digits.parse(b""), Ok((vec![], 0)));
+    assert_eq!(digits.parse(b"0"), Ok((vec![b'0'], 1)));
+    assert_eq!(digits.parse(b"0z"), Ok((vec![b'0'], 1)));
+    assert_eq!(digits.parse(b"01"), Ok((vec![b'0', b'1'], 2)));
+    assert_eq!(digits.parse(b"01z"), Ok((vec![b'0', b'1'], 2)));
+    assert_eq!(digits.parse(b"z"), Ok((vec![], 0)));
 }
