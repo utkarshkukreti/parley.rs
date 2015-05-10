@@ -1,7 +1,7 @@
 pub mod u8;
 pub mod combinator;
 
-pub use combinator::{Then, Or, Map};
+pub use combinator::{Then, Or, Map, Many};
 
 pub trait Parser: Sized {
     type Output;
@@ -30,6 +30,12 @@ pub trait Parser: Sized {
         Map {
             p: self,
             f: f
+        }
+    }
+
+    fn many(self) -> Many<Self> {
+        Many {
+            p: self
         }
     }
 }
